@@ -3,10 +3,8 @@ require("dotenv").config(); // ✅ required to load .env
 
 const connectToDb = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URL, {    // ✅ correct variable name
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    // Mongoose 6+ doesn't require useNewUrlParser/useUnifiedTopology; remove options to avoid deprecation warnings
+    await mongoose.connect(process.env.MONGO_URL);
 
     console.log("✅ MongoDB Connected");
   } catch (error) {

@@ -59,9 +59,14 @@ module.exports.loginController = async (req,res,next) => {
 
     const token = captain.generateAuthToken();
 
-    res.cookie('token',token);
+    // Set cookie securely in production
+    res.cookie('token', token, {
+        httpOnly: true,
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        secure: process.env.NODE_ENV === 'production'
+    });
 
-    res.status(200).json({token,captain});
+    res.status(200).json({ token, captain });
 }
 
 // Forgot Password Controller

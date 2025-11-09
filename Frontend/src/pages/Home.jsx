@@ -104,17 +104,28 @@ const Home = () => {
     };
   }, [panelOpen]);
 
-  socket.on("ride-confirmed", (ride) => {
-    setVehicleFound(false);
-    setWaitingForDriver(true);
-    setRide(ride);
-  });
+  useEffect(() => {
+    if (!socket) return;
 
-  socket.on("ride-started", (ride) => {
-    console.log("ride");
-    setWaitingForDriver(false);
-    navigate("/riding", { state: { ride } });
-  });
+    const onRideConfirmed = (ride) => {
+      setVehicleFound(false);
+      setWaitingForDriver(true);
+      setRide(ride);
+    };
+
+    const onRideStarted = (ride) => {
+      setWaitingForDriver(false);
+      navigate("/riding", { state: { ride } });
+    };
+
+    socket.on("ride-confirmed", onRideConfirmed);
+    socket.on("ride-started", onRideStarted);
+
+    return () => {
+      socket.off("ride-confirmed", onRideConfirmed);
+      socket.off("ride-started", onRideStarted);
+    };
+  }, [socket]);
 
   const handlePanelClose = (e) => {
     e.preventDefault();
