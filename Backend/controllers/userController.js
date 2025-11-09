@@ -28,7 +28,10 @@ exports.registerController = async (req, res) => {
 
     return res.status(201).json({ message: 'User created successfully', user: safeUser, token });
   } catch (err) {
-    return res.status(500).json({ message: "Server error" });
+    console.error('registerController error:', err);
+    const payload = { message: "Server error" };
+    if (process.env.NODE_ENV !== 'production') payload.error = err.message;
+    return res.status(500).json(payload);
   }
 };
 
@@ -59,7 +62,10 @@ exports.loginController = async (req, res) => {
 
     return res.status(200).json({ message: "Login successful", user: safeUser, token });
   } catch (err) {
-    return res.status(500).json({ message: "Server error" });
+    console.error('loginController error:', err);
+    const payload = { message: "Server error" };
+    if (process.env.NODE_ENV !== 'production') payload.error = err.message;
+    return res.status(500).json(payload);
   }
 };
 
@@ -71,7 +77,7 @@ exports.logoutController = async (req, res) => {
     try {
       await blacklistTokenModel.create({ token });
     } catch (err) {
-      // ignore duplicate key or other minor errors
+      console.warn('logoutController: failed to save blacklist token', err.message || err);
     }
   }
 
