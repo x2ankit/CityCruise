@@ -42,4 +42,14 @@ app.get('/health', async (req, res) => {
   }
 });
 
+// Simple request logger (replace with morgan/winston for production)
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} ${req.method} ${req.originalUrl}`);
+  next();
+});
+
+// Error handler
+const errorHandler = require('./middlewares/errorHandler');
+app.use(errorHandler);
+
 module.exports = app;
